@@ -70,7 +70,7 @@ class User(models.Model):
 class StyleManager(models.Manager):
 	def add(self, style):
 		message = []
-		if len(name) < 1:
+		if len(style) < 1:
 			message.append('style cannot be blank')
 
 		if len(message) > 0: 
@@ -86,7 +86,7 @@ class Style(models.Model):
 	styleManager = StyleManager()
 
 class TruckManager(models.Manager):
-	def add(self, name, description, twitter):
+	def add(self, name, description, twitter, area, user, style):
 		message = []
 		if len(name) < 1:
 			message.append('truck name cannot be blank')
@@ -96,6 +96,8 @@ class TruckManager(models.Manager):
 			message.append('you must include the twitter account')
 		if not TWITTER_REGEX.match(twitter):
 			message.append('twitter account must have the form "@account"')
+		if len(area) < 1:
+			message.append("please list the truck's area")
 
 		if len(message) > 0: 
 			return (False, message)
@@ -108,7 +110,7 @@ class TruckManager(models.Manager):
 			if len(message) > 0: 
 				return (False, message)
 			else:
-				truck = Truck.truckManager.create(name=name, description=description, twitter=twitter, location='unknown') 
+				truck = Truck.truckManager.create(name=name, description=description, twitter=twitter, location='unknown', area=area, user_id=user, style_id=style) 
 				return (True, truck)
 
 class Truck(models.Model):
@@ -123,27 +125,10 @@ class Truck(models.Model):
 	style = models.ForeignKey(Style)
 	truckManager = TruckManager()
 
-class AreaManager(models.Manager):
-	def register(self, area):
-		message = []
-		if len(area) < 1:
-			message.append('style cannot be blank')
-
-		if len(message) > 0: 
-			return (False, message)
-		else:
-			area = Area.areaManager.create(style=style) 
-			return (True, area)
-
-#manage it from the views?
-class Area(models.Model):
-	area = models.CharField(max_length=255)
-	created_at = models.DateTimeField(auto_now_add=True)
-	updated_at = models.DateTimeField(auto_now=True)
-
 #many to many!
 class Rating(models.Model):
 	user = models.ForeignKey(User)
 	truck = models.ForeignKey(Truck)
 	rating = models.PositiveSmallIntegerField()
+	title = models.CharField(max_length=255)
 	review = models.CharField(max_length=255)

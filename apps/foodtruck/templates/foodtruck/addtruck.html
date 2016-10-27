@@ -30,9 +30,9 @@
 	<!-- need to autopopulate this list!!!! -->
 
 	<select name="style">
-		<option value="Tacos">Tacos</option>
-		<option value="Kebab">Kebab</option>
-		<option value="Sandwich">Sandwich</option>
+		{% for style in styles %}
+		<option value="{{style.id}}">{{style.style}}</option>
+		{% endfor %}
 		<option value="Other">Other, please specify</option>
 	</select><br>
 	

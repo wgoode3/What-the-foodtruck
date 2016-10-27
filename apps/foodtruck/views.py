@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 import twitter
 import re
 from datetime import datetime
-from .models import User  #Truck, Rating, Area, Style #images, schedule
+from .models import User, Style, Truck # Rating
 
 api = twitter.Api(consumer_key = 'LgPgWrpf0zyJimw1DSa4a9obx', 
 	consumer_secret = 'RqazdCx73l8x2RRmvntVW08AYaFikh9lvYwc9iMdPTMICSgAmu', 
@@ -13,12 +13,22 @@ TYSON_REGEX = re.compile(r'((t|T)yson).*')
 
 def home(request):
 	#landing page!
-	return render(request, 'foodtruck/home.html')
+
+	#uncomment to nuke the databases
+	#user = User.userManager.all().delete()
+	#style = Style.styleManager.all().delete()
+	#truck = truck.truckManager.all().delete()
+
+	style = Style.styleManager.all()
+	context = {'styles': style}
+	return render(request, 'foodtruck/home.html', context)
 
 def results(request):
 	#shows the results dude
 	#hey I think we need a search feature
-	return render(request, 'foodtruck/results.html')
+	trucks = Truck.truckManager.all()
+	context = {'trucks': trucks}
+	return render(request, 'foodtruck/results.html', context)
 
 def user(request):
 	#a page to handle user login and registration
@@ -57,49 +67,51 @@ def logout(request):
 	return redirect('/')
 
 def addtruck(request):
-	#a page that shows forms for adding a food truck
 	#require that they are logged in!
 	if 'user' not in request.session:
 		context = {'message': 'You need to login to add a truck!!!'}
 		return render(request, 'foodtruck/user.html', context)
 	else:
-		return render(request, 'foodtruck/addtruck.html')
+		#a page that shows forms for adding a food truck
+		style = Style.styleManager.all()
+		context = {'styles': style}
+		return render(request, 'foodtruck/addtruck.html', context)
 
 def add(request):
 	#something that handles the request to the database
-	print request.POST
 
 	if str(request.POST['style']) == 'Other':
-		# style = Style.styleManager.add(style=request.POST['other'])
-		print request.POST['other']
+		style = Style.styleManager.add(style=request.POST['other'])
+		print style
+		truck = Truck.truckManager.add(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], area=request.POST['area'], user=request.session['user'][0], style=style[1].id)
+		# get the style id foreign key
 	else:
-		# style = Style.styleManager.all().filter(style=request.POST['style'])
+		style = Style.styleManager.filter(id=request.POST['style'])
+		# get the style id... request.POST['style']
+		truck = Truck.truckManager.add(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], area=request.POST['area'], user=request.session['user'][0], style=request.POST['style'])
 		print request.POST['style']
 
 	#need to check style validation as well!
 
-	# style_id = style.styleManager.style #I think this works!
-	# area_id = 1
-	# add = Truck.truckManager.add(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], style_id=style_id, area_id=area_id)
 	return redirect('/')
 
 def truck(request, id):
 	#for a given truck id show off a truck
 	#let's people leave ratings if logged in
-	truck = truck.truckManager.filter(id=id)
+	truck = Truck.truckManager.filter(id=id)
 	context = {'truck': truck}
 	return render(request, 'foodtruck/truck.html', context)
 
 def edittruck(request, id):
 	#for a given truck id edit the truck
-	truck = truck.truckManager.filter(id=id)
+	truck = Truck.truckManager.filter(id=id)
 	context = {'truck': truck}
 	return render(request, 'foodtruck/edit.html', context)
 
 def edit(request, id):
 	#handles the editting of a given truck
 	#maybe use **args instead
-	truck = truck.truckManager.filter(id=id).update(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], style_id=style_id, area_id=area_id)
+	truck = Truck.truckManager.filter(id=id).update(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], style_id=style_id, area_id=area_id)
 	return redirect('/')
 
 def rating(request, id):

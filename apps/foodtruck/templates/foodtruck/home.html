@@ -26,13 +26,11 @@
 
 	<!-- need to autopopulate this list!!!! -->
 
-	Style: <select name="style" form="styleform">
-		<option disabled selected value> -- select an option -- </option>
-		<option value="Tacos">Tacos</option>
-		<option value="Kebab">Kebab</option>
-		<option value="Sandwich">Sandwich</option>
-		<!-- <option value="Other">Other, please specify</option> -->
-	</select>
+	Style:<select name="style">
+		{% for style in styles %}
+			<option value="{{style.id}}">{{style.style}}</option>
+		{% endfor %}
+	</select><br>
 	
 	<input type='submit' value="I'm hungry!"><br>
 	<input type='submit' value="Just show me the trucks!">

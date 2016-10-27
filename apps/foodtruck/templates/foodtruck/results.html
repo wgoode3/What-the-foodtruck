@@ -14,6 +14,18 @@
 	<h4>Welcome {{request.session.user.1}} <a href='/logout'>logout?</a></h4>
 {% endif %}
 
+<h4>Currently showing all the trucks</h4>
+
+{% for truck in trucks%}
+	<a href="/truck/{{truck.id}}">{{truck.name}}</a>
+	<p>{{truck.description}}</p>
+	<p>{{truck.twitter}}</p>
+	<p>{{truck.area}}</p>
+	<p>{{truck.location}}</p>
+	<p>{{truck.style.style}}</p>
+	<p>{{truck.user.username}}</p>
+{% endfor %}
+
 
 </body>
 </html>

@@ -7,6 +7,18 @@
 <h2>Editting a truck takes place here</h2>
 <a href='/results'>Back to results</a>
 <a href='/'>Home</a>
-<a href='/truck'>back to truck</a>
+<a href='/truck/{{truck.0.id}}'>back to truck</a><br>
+
+Name:<input type='text' name='name' value="{{truck.0.name}}"><br>
+Description:<br><textarea rows="4" cols="50" name='description'>{{truck.0.description}}</textarea><br>
+Twitter:<input type='text' name='name' value="{{truck.0.twitter}}"><br>
+<p>{{truck.0.name}}</p>
+<p>{{truck.0.description}}</p>
+<p>{{truck.0.twitter}}</p>
+<p>{{truck.0.area}}</p>
+<p>{{truck.0.location}}</p>
+<p>{{truck.0.style.style}}</p>
+<p>{{truck.0.user.username}}</p>
+
 </body>
 </html>
