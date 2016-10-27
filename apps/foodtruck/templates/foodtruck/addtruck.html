@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Add a truck</title>
+</head>
+<body>
+<h2>This is where you add a new truck</h2>
+<a href='/'>Home</a>
+<a href='/results'>Results</a>
+
+{% if 'user' not in request.session %}
+	<h4><a href='/user'>login</a></h4>
+{% else %}
+	<h4>Welcome {{request.session.user.1}} <a href='/logout'>logout?</a></h4>
+{% endif %}
+
+<form action='/add' method='POST'>
+	{% csrf_token %}
+	
+	Truck name: <input type='text' name='name'><br>
+	Description:<br><textarea rows="4" cols="50" name='description'>Description goes here! (max 255 characters)</textarea><br>
+	Twitter: <input type='text' name='twitter'><br>
+	<p><i>*Twitter is used to determine truck location, please provide the account name in the form @account</i></p>
+
+	<select name="area">
+		<option value="Washington DC">Washington DC</option>
+		<!-- <option value="Other">Other, please specify</option> -->
+	</select><br>
+
+	<!-- need to autopopulate this list!!!! -->
+
+	<select name="style">
+		<option value="Tacos">Tacos</option>
+		<option value="Kebab">Kebab</option>
+		<option value="Sandwich">Sandwich</option>
+		<option value="Other">Other, please specify</option>
+	</select><br>
+	
+	Other Style: <input type='text' name='other'><br>
+
+	<input type='submit' value="Add Truck!">
+</form>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Displaying Results</title>
+</head>
+<body>
+<h2>I am some results!</h2>
+<a href='/'>Home</a>
+<a href='/addtruck'>add a truck</a>
+
+{% if 'user' not in request.session %}
+	<h4><a href='/user'>login</a></h4>
+{% else %}
+	<h4>Welcome {{request.session.user.1}} <a href='/logout'>logout?</a></h4>
+{% endif %}
+
+
+</body>
+</html>
