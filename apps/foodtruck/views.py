@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 import twitter
 import re
 from datetime import datetime
-from .models import User, Style, Truck # Rating
+from .models import User, Style, Truck, Rating
 
 api = twitter.Api(consumer_key = 'LgPgWrpf0zyJimw1DSa4a9obx', 
 	consumer_secret = 'RqazdCx73l8x2RRmvntVW08AYaFikh9lvYwc9iMdPTMICSgAmu', 
@@ -96,10 +96,18 @@ def add(request):
 	return redirect('/')
 
 def truck(request, id):
-	#for a given truck id show off a truck
+	#for a given truck id show off a truck and reviews
 	#let's people leave ratings if logged in
 	truck = Truck.truckManager.filter(id=id)
-	context = {'truck': truck}
+	ratings = Rating.objects.filter(truck_id=id)
+	avg = 0
+	if len(ratings) > 0:
+		total = 0
+		for rating in ratings:
+			total += float(rating.rating)
+		avg = str(float(total / len(ratings)))[0:4]
+
+	context = {'truck': truck, 'ratings': ratings, 'avg': avg}
 	return render(request, 'foodtruck/truck.html', context)
 
 def edittruck(request, id):
@@ -110,31 +118,45 @@ def edittruck(request, id):
 
 def edit(request, id):
 	#handles the editting of a given truck
-	#maybe use **args instead
-	truck = Truck.truckManager.filter(id=id).update(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], style_id=style_id, area_id=area_id)
+	truck = Truck.truckManager.filter(id=id).update(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'])
+	return redirect('/truck/'+str(id))
+
+def delete(request, id):
+	#handles the deleting of a given truck
+	truck = Truck.truckManager.filter(id=id).delete()
 	return redirect('/')
 
 def rating(request, id):
 	#handles adding a rating for a given truck
-	#check that user is logged in
-	#keep track of truck number!
-	rating = Rating.object.create(user_id=request.session['user'][2], truck_id=id, rating=request.POST['rating'], review=request.POST['review'])
+	#also check if a rating already exists for the truck and maybe return an error if the rating is blank
+	check = Rating.objects.filter(truck_id=id).filter(user_id=request.session['user'][0])
+	if len(check) == 0:
+		rating = Rating.objects.create(user_id=request.session['user'][0], truck_id=id, title=request.POST['title'], review=request.POST['review'], rating=request.POST['rating'])
 
-	return redirect('/foodtruck/truck.html')
+	return redirect('/truck/'+str(id))
 
 def update(request):
 	#handles location updating for the app
 	today = datetime.utcnow()
 	trucks = Truck.truckManager.all()
 	for truck in trucks:
-		timeline = api.GetUserTimeline(screen_name='{}'.format(truck.twitter), count=1)
-		now = datetime.strptime(timeline[0].created_at, '%a %b %d %H:%M:%S +0000 %Y')
-		if now.date() == today.date():
-			if TYSON_REGEX.search(str(timeline[0].text)):
-				update = Truck.truckManager.filter(id=truck.id).update(location='Tysons Corner')
+		try:
+			print truck.twitter
+			timeline = api.GetUserTimeline(screen_name='{}'.format(truck.twitter), count=1)
+			now = datetime.strptime(timeline[0].created_at, '%a %b %d %H:%M:%S +0000 %Y')
+			print timeline
+			print '*'*100
+			if now.date() == today.date():
+				if TYSON_REGEX.search(str(timeline[0].text)):
+					update = Truck.truckManager.filter(id=truck.id).update(location='Tysons Corner')
+		except: 
+			pass
+	return redirect('/')
 
 def reset(request):
 	trucks = Truck.truckManager.all()
 	for truck in trucks:
 		update = Truck.truckManager.filter(id=truck.id).update(location='unknown')
+	return redirect('/')
+
 

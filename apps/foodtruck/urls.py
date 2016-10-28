@@ -13,6 +13,7 @@ urlpatterns = [
 	url(r'^truck/(?P<id>\d+)$', views.truck),
 	url(r'^edittruck/(?P<id>\d+)$', views.edittruck),
 	url(r'^edit/(?P<id>\d+)$', views.edit),
+	url(r'^delete/(?P<id>\d+)$', views.delete),
 	url(r'^rating/(?P<id>\d+)$', views.rating),
 	url(r'^update$', views.update),
 	url(r'^reset$', views.reset),

@@ -7,12 +7,12 @@
 <h2>I will show a given truck #</h2>
 <a href='/results'>Back to results</a>
 <a href='/'>Home</a>
-<a href='/edittruck/{{truck.0.id}}'>Edit truck</a>
 
 {% if 'user' not in request.session %}
-	<h4><a href='/user'>login</a></h4>
+	<h4><a href='/user'>login to edit {{truck.0.name}}</a></h4>
 {% else %}
 	<h4>Welcome {{request.session.user.1}} <a href='/logout'>logout?</a></h4>
+	<a href='/edittruck/{{truck.0.id}}'>Edit truck</a>
 {% endif %}
 
 <p>{{truck.0.name}}</p>
@@ -25,19 +25,29 @@
 
 <h3>Reviews will go here</h3>
 
+<h4>Average rating: {{avg}}</h4>
+
+{% for rating in ratings %}
+	<p>{{rating.user.username}}</p>
+	<h4>{{rating.title}}</h4>
+	<p>{{rating.review}}</p>
+	<p>{{rating.rating}}</p>
+{% endfor %}
+
 {% if 'user' not in request.session %}
 	<h4><a href='/user'>login to leave a review</a></h4>
 {% else %}
-	<form action='/add' method='POST'>
+	<form action='/rating/{{truck.0.id}}' method='POST'>
 		{% csrf_token %}
-		Title: <input type='text' name='name'><br>
-		Review:<br><textarea rows="4" cols="50" name='description'>Review goes here! (max 255 characters)</textarea><br>
+		Title: <input type='text' name='title'><br>
+		Review:<br><textarea rows="4" cols="50" name='review'>Review goes here! (max 255 characters)</textarea><br>
 		Star Rating: <select name="rating">
 			<option value="5">5</option>
 			<option value="4">4</option>
 			<option value="3" selected>3</option>
 			<option value="2">2</option>
 			<option value="1">1</option>
+		<input type='submit' value='leave review'/>
 		</select><br>
 	<form>
 {% endif %}

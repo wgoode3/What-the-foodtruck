@@ -129,6 +129,8 @@ class Truck(models.Model):
 class Rating(models.Model):
 	user = models.ForeignKey(User)
 	truck = models.ForeignKey(Truck)
-	rating = models.PositiveSmallIntegerField()
 	title = models.CharField(max_length=255)
 	review = models.CharField(max_length=255)
+	rating = models.PositiveSmallIntegerField()
+	
+	
