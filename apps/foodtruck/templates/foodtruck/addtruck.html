@@ -41,5 +41,9 @@
 	<input type='submit' value="Add Truck!">
 </form>
 
+{% for error in errors %}
+	<p style='color:red'><strong>{{error}}</strong></p>
+{% endfor %}
+
 </body>
 </html>

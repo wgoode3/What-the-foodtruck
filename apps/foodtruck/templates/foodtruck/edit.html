@@ -16,6 +16,10 @@
 	Twitter:<input type='text' name='twitter' value="{{truck.0.twitter}}"><br>
 	<input type='submit' value='edit'/>
 </form>
+<form action='/delete/{{truck.0.id}}' method='POST'>
+	{% csrf_token %}
+	<input type='submit' value='delete truck?'/>
+</form>
 
 
 <p>{{truck.0.name}}</p>

@@ -90,8 +90,8 @@ class TruckManager(models.Manager):
 		message = []
 		if len(name) < 1:
 			message.append('truck name cannot be blank')
-		if len(description) < 1:
-			message.append('description cannot be blank')
+		if str(description) == 'Description goes here! (max 255 characters)':
+			message.append('please include a description')
 		if len(twitter) < 1:
 			message.append('you must include the twitter account')
 		if not TWITTER_REGEX.match(twitter):

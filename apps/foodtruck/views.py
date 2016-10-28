@@ -7,7 +7,8 @@ from .models import User, Style, Truck, Rating
 api = twitter.Api(consumer_key = 'LgPgWrpf0zyJimw1DSa4a9obx', 
 	consumer_secret = 'RqazdCx73l8x2RRmvntVW08AYaFikh9lvYwc9iMdPTMICSgAmu', 
 	access_token_key = '1564487502-FICCLO2KJOXTNW0BQmY3Hu7dxpm6psYcAsk8Bvw', 
-	access_token_secret = 'GAQffclcmUeib1uPgsbGfM3RJnWDVDnxbnZzv7VcWNvJL')
+	access_token_secret = 'GAQffclcmUeib1uPgsbGfM3RJnWDVDnxbnZzv7VcWNvJL', 
+	sleep_on_rate_limit=True)
 
 TYSON_REGEX = re.compile(r'((t|T)yson).*')
 
@@ -15,9 +16,10 @@ def home(request):
 	#landing page!
 
 	#uncomment to nuke the databases
-	#user = User.userManager.all().delete()
-	#style = Style.styleManager.all().delete()
-	#truck = truck.truckManager.all().delete()
+	# user = User.userManager.all().delete()
+	# style = Style.styleManager.all().delete()
+	# truck = Truck.truckManager.all().delete()
+	# rating = Rating.objects.all().delete()
 
 	style = Style.styleManager.all()
 	context = {'styles': style}
@@ -26,8 +28,14 @@ def home(request):
 def results(request):
 	#shows the results dude
 	#hey I think we need a search feature
-	trucks = Truck.truckManager.all()
-	context = {'trucks': trucks}
+	if 'style' not in request.POST:
+		trucks = Truck.truckManager.all().exclude(location='Tysons Corner')
+		localtrucks = Truck.truckManager.filter(location='Tysons Corner')
+	else:
+		trucks = Truck.truckManager.filter(style=request.POST['style']).exclude(location='Tysons Corner')
+		localtrucks = Truck.truckManager.filter(style=request.POST['style']).filter(location='Tysons Corner')
+
+	context = {'trucks': trucks, 'localtrucks': localtrucks}
 	return render(request, 'foodtruck/results.html', context)
 
 def user(request):
@@ -80,20 +88,34 @@ def addtruck(request):
 def add(request):
 	#something that handles the request to the database
 
+	#check for user adding a new style
 	if str(request.POST['style']) == 'Other':
 		style = Style.styleManager.add(style=request.POST['other'])
-		print style
 		truck = Truck.truckManager.add(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], area=request.POST['area'], user=request.session['user'][0], style=style[1].id)
-		# get the style id foreign key
+		#check style is entered
+		if style[0]:
+			#check for truck errors
+			if truck[0]:
+				#truck added successfully maybe include a message like that
+				return redirect('/')
+			else:
+				#show truck creation error
+				context = {'errors': truck[1]}
+				return render(request, 'foodtruck/addtruck.html', context)
+		else:
+			#show style error
+			context = {'errors': style[1]}
+			return render(request, 'foodtruck/addtruck.html', context)
+	#if user chose an existing style
 	else:
-		style = Style.styleManager.filter(id=request.POST['style'])
-		# get the style id... request.POST['style']
 		truck = Truck.truckManager.add(name=request.POST['name'], description=request.POST['description'], twitter=request.POST['twitter'], area=request.POST['area'], user=request.session['user'][0], style=request.POST['style'])
-		print request.POST['style']
-
-	#need to check style validation as well!
-
-	return redirect('/')
+		if truck[0]:
+			#truck added successfully maybe include a message like that
+			return redirect('/')
+		else:
+			#show truck creation error
+			context = {'errors': truck[1]}
+			return render(request, 'foodtruck/addtruck.html', context)
 
 def truck(request, id):
 	#for a given truck id show off a truck and reviews

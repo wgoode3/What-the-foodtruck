@@ -14,18 +14,31 @@
 	<h4>Welcome {{request.session.user.1}} <a href='/logout'>logout?</a></h4>
 {% endif %}
 
-<h4>Currently showing all the trucks</h4>
+<h4>Trucks at Tysons Corner</h4>
+
+{% for localtruck in localtrucks%}
+	<a href="/truck/{{localtruck.id}}">{{localtruck.name}}</a>
+	<p>{{localtruck.description}}</p>
+	<a href="https://twitter.com/{{localtruck.twitter}}">{{localtruck.twitter}}</a>
+	<p>{{localtruck.area}}</p>
+	<p>{{localtruck.location}}</p>
+	<p>{{localtruck.style.style}}</p>
+	<p>{{localtruck.user.username}}</p>
+	<hr>
+{% endfor %}
+
+<h4>Other trucks</h4>
 
 {% for truck in trucks%}
 	<a href="/truck/{{truck.id}}">{{truck.name}}</a>
 	<p>{{truck.description}}</p>
-	<p>{{truck.twitter}}</p>
+	<a href="https://twitter.com/{{truck.twitter}}">{{truck.twitter}}</a>
 	<p>{{truck.area}}</p>
 	<p>{{truck.location}}</p>
 	<p>{{truck.style.style}}</p>
 	<p>{{truck.user.username}}</p>
+	<hr>
 {% endfor %}
-
 
 </body>
 </html>

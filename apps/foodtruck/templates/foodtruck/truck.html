@@ -17,7 +17,7 @@
 
 <p>{{truck.0.name}}</p>
 <p>{{truck.0.description}}</p>
-<p>{{truck.0.twitter}}</p>
+<a href="https://twitter.com/{{truck.0.twitter}}">{{truck.0.twitter}}</a>
 <p>{{truck.0.area}}</p>
 <p>{{truck.0.location}}</p>
 <p>{{truck.0.style.style}}</p>
@@ -25,7 +25,11 @@
 
 <h3>Reviews will go here</h3>
 
-<h4>Average rating: {{avg}}</h4>
+{% if avg == 0 %}
+	<h4>Average rating: no ratings</h4>
+{% else %}
+	<h4>Average rating: {{avg}}</h4>
+{% endif %}
 
 {% for rating in ratings %}
 	<p>{{rating.user.username}}</p>

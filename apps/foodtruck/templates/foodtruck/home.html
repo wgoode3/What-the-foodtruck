@@ -17,14 +17,12 @@
 <form action='/results' method='POST'>
 	{% csrf_token %}
 	
-	Search?: <input type='text' name='pw'><br>
+	Search?: <input type='text' name='search'><br>
 	
 	Area: <select name="area" form="areaform">
 		<option value="Washington DC">Washington DC</option>
 		<!-- <option value="Other">Other, please specify</option> -->
 	</select><br>
-
-	<!-- need to autopopulate this list!!!! -->
 
 	Style:<select name="style">
 		{% for style in styles %}
@@ -33,7 +31,11 @@
 	</select><br>
 	
 	<input type='submit' value="I'm hungry!"><br>
-	<input type='submit' value="Just show me the trucks!">
+</form>
+
+<form action='/results' method='POST'>
+	{% csrf_token %}
+	<input type='submit' value="Just show me the trucks!"><br>
 </form>
 
 </body>
